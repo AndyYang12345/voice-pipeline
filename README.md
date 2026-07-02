@@ -108,6 +108,10 @@ tts-server  # 使用你已有的安装启动服务
 `tts-speak` 和 `tts-config` 不依赖本地 GPT-SoVITS，只通过 HTTP API 交互。
 服务器地址通过 `~/.voice_pipeline/config.json` 配置。
 
+## 相关项目
+
+- [voice-assistant](https://github.com/AndyYang12345/voice-assistant) — Claude Code 语音助手插件，基于 voice-pipeline 提供 TTS 语音交互集成
+
 ## 许可证
 
 MIT License — 参见 [LICENSE](LICENSE)
