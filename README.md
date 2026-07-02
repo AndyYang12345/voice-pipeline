@@ -28,26 +28,30 @@ git clone --recurse-submodules https://github.com/AndyYang12345/voice-pipeline.g
 cd voice-pipeline
 bash install.sh
 
-# 2. 放入你的模型文件和参考音频
+# 2. 配置 GPT-SoVITS 环境
+#    → 按照 GPT-SoVITS 官方文档创建 conda 环境（默认名 GPTSoVits）并安装依赖
+#    → https://github.com/RVC-Boss/GPT-SoVITS
+
+# 3. 放入你的模型文件和参考音频
 mkdir -p models/gpt_weights models/sovits_weights ref_audio
 #   → 将 .ckpt 放入 models/gpt_weights/
 #   → 将 .pth  放入 models/sovits_weights/
 #   → 将参考音频放入 ref_audio/
 
-# 3. 一键配置（自动检测模型、设备、版本）
+# 4. 一键配置（自动检测模型、设备、版本）
 tts-config --infer-auto
 
-# 4. 配置参考音频
+# 5. 配置参考音频
 tts-config --ref-dir ./ref_audio
 tts-config --ref-audio reference.wav
 tts-config --prompt "参考音频对应的文本" ja
 
-# 5. 启动服务，测试合成
+# 6. 启动服务，测试合成
 tts-server
 tts-speak "こんにちは。" ja
 ```
 
-> 📖 步骤 3 的 `--infer-auto` 会自动扫描 `models/` 目录、检测 GPU/CUDA、推断版本并生成 `tts_infer.yaml`。如需手动调整设备、半精度、路径等参数，使用 `tts-config --infer-show` 查看，或参见 [推理配置](#推理配置-tts_inferyaml) 章节逐项修改。
+> 📖 步骤 4 的 `--infer-auto` 会自动扫描 `models/` 目录、检测 GPU/CUDA、推断版本并生成 `tts_infer.yaml`。如需手动调整设备、半精度、路径等参数，使用 `tts-config --infer-show` 查看，或参见 [推理配置](#推理配置-tts_inferyaml) 章节逐项修改。
 
 ### 场景 B：已有 GPT-SoVITS 服务（纯客户端）
 
@@ -86,7 +90,7 @@ tts-speak "こんにちは。" ja
 ## 依赖
 
 - Python 3.8+ / PyYAML
-- conda 环境（GPT-SoVITS 推理环境）
+- conda 环境 — 按 [GPT-SoVITS 官方指南](https://github.com/RVC-Boss/GPT-SoVITS) 配置（默认环境名 `GPTSoVits`）
 - ffmpeg（音频播放）
 - GPT-SoVITS（作为 git submodule 包含）
 
