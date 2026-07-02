@@ -15,6 +15,7 @@ voice-pipeline — GPT-SoVITS 语音合成播放工具
 """
 
 import argparse
+import fcntl
 import json
 import subprocess
 import sys
@@ -27,6 +28,7 @@ import requests
 PIPELINE_DIR = os.path.dirname(os.path.realpath(__file__))
 CONFIG_DIR = os.path.expanduser("~/.voice_pipeline")
 CONFIG_FILE = os.path.join(CONFIG_DIR, "config.json")
+LOCK_FILE = os.path.join(CONFIG_DIR, "tts.lock")
 TOGGLE_FILE = os.path.expanduser("~/.tts_speak_enabled")
 
 STREAM_MODES = {
@@ -55,6 +57,21 @@ DEFAULT_CONFIG = {
 
 def ensure_config_dir():
     os.makedirs(CONFIG_DIR, exist_ok=True)
+
+
+def acquire_lock() -> int:
+    """获取排他锁，阻塞直到前一个 tts-speak 完成播放。
+    返回锁文件 fd，调用方负责在播放完成后关闭。"""
+    ensure_config_dir()
+    fd = os.open(LOCK_FILE, os.O_CREAT | os.O_RDWR, 0o644)
+    fcntl.flock(fd, fcntl.LOCK_EX)  # 阻塞等待
+    return fd
+
+
+def release_lock(fd: int):
+    """释放锁并关闭 fd"""
+    fcntl.flock(fd, fcntl.LOCK_UN)
+    os.close(fd)
 
 
 def is_enabled():
@@ -395,15 +412,19 @@ if __name__ == "__main__":
         stream_mode = args.stream_mode or load_config()["stream_mode"]
         use_stream = stream_mode > 0
 
-    if use_stream:
-        speak_stream(
-            args.text, lang=args.lang, ref=args.ref,
-            prompt_text=args.prompt, prompt_lang=args.lang_ref,
-            quiet=args.quiet, stream_mode=stream_mode,
-        )
-    else:
-        speak(
-            args.text, lang=args.lang, ref=args.ref,
-            prompt_text=args.prompt, prompt_lang=args.lang_ref,
-            quiet=args.quiet,
-        )
+    lock_fd = acquire_lock()
+    try:
+        if use_stream:
+            speak_stream(
+                args.text, lang=args.lang, ref=args.ref,
+                prompt_text=args.prompt, prompt_lang=args.lang_ref,
+                quiet=args.quiet, stream_mode=stream_mode,
+            )
+        else:
+            speak(
+                args.text, lang=args.lang, ref=args.ref,
+                prompt_text=args.prompt, prompt_lang=args.lang_ref,
+                quiet=args.quiet,
+            )
+    finally:
+        release_lock(lock_fd)
