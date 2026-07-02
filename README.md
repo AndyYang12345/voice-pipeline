@@ -24,7 +24,7 @@
 
 ```bash
 # 1. 克隆并安装
-git clone --recurse-submodules https://github.com/<your-username>/voice-pipeline.git
+git clone --recurse-submodules https://github.com/AndyYang12345/voice-pipeline.git
 cd voice-pipeline
 bash install.sh
 
@@ -54,7 +54,7 @@ tts-speak "こんにちは。" ja
 如果你已经有运行中的 GPT-SoVITS API 服务，只需客户端工具：
 
 ```bash
-git clone https://github.com/<your-username>/voice-pipeline.git
+git clone https://github.com/AndyYang12345/voice-pipeline.git
 cd voice-pipeline && bash install.sh
 
 # 指向你的服务器
@@ -69,7 +69,7 @@ tts-speak "こんにちは。" ja
 用环境变量指向你已有的 GPT-SoVITS 目录：
 
 ```bash
-git clone https://github.com/<your-username>/voice-pipeline.git
+git clone https://github.com/AndyYang12345/voice-pipeline.git
 cd voice-pipeline && bash install.sh
 
 # 指定 GPT-SoVITS 路径和推理配置
