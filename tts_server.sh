@@ -10,7 +10,7 @@ set -e
 
 PORT="${VOICE_PIPELINE_PORT:-9880}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_DIR="${SCRIPT_DIR}/GPT-SoVITS"
+PROJECT_DIR="${VOICE_PIPELINE_PROJECT_DIR:-${SCRIPT_DIR}/GPT-SoVITS}"
 CONDA_ENV="${VOICE_PIPELINE_CONDA:-GPTSoVits}"
 PID_FILE="/tmp/voice_pipeline_server.pid"
 LOG_FILE="/tmp/voice_pipeline_server.log"
@@ -38,11 +38,13 @@ show_status() {
         echo -e "${GREEN}✅ TTS 服务运行中${NC}"
         echo "   PID:    ${pid}"
         echo "   地址:   http://127.0.0.1:${PORT}"
+        echo "   项目:   ${PROJECT_DIR}"
         echo "   日志:   ${LOG_FILE}"
         echo "   Conda:  ${CONDA_ENV}"
     else
         echo -e "${RED}🔴 TTS 服务未运行${NC}"
         echo "   端口:   ${PORT}"
+        echo "   项目:   ${PROJECT_DIR}"
     fi
 }
 
@@ -135,9 +137,10 @@ case "${1:-auto}" in
         echo "用法: tts_server.sh [--on|--off]"
         echo ""
         echo "环境变量:"
-        echo "  VOICE_PIPELINE_PORT=9880        服务端口"
+        echo "  VOICE_PIPELINE_PROJECT_DIR   GPT-SoVITS 项目路径（默认: ./GPT-SoVITS）"
+        echo "  VOICE_PIPELINE_PORT=9880     服务端口"
         echo "  VOICE_PIPELINE_CONDA=GPTSoVits   conda 环境名"
-        echo "  VOICE_PIPELINE_CONFIG=./tts_infer.yaml  配置文件路径"
+        echo "  VOICE_PIPELINE_CONFIG        推理配置文件（默认: ./tts_infer.yaml）"
         exit 1
         ;;
 esac

@@ -12,46 +12,63 @@
 
 ## 快速开始
 
-### 1. 克隆并初始化
+### 场景 A：新用户（使用 submodule）
 
 ```bash
+# 1. 克隆（含 GPT-SoVITS submodule）
 git clone --recurse-submodules https://github.com/<your-username>/voice-pipeline.git
 cd voice-pipeline
-```
 
-### 2. 安装
-
-```bash
+# 2. 安装
 bash install.sh
-```
 
-### 3. 配置
+# 3. 放置模型权重和参考音频
+#   models/gpt_weights/xxx.ckpt
+#   models/sovits_weights/xxx.pth
+#   ref_audio/reference.wav
 
-```bash
-# 设置参考音频（必需）
+# 4. 编辑 tts_infer.yaml 指向你的模型
+cp tts_infer.yaml.example tts_infer.yaml
+
+# 5. 配置参考音频
 tts-config --ref-dir ./ref_audio
 tts-config --ref-audio reference.wav
 tts-config --prompt "参考音频对应的文本" ja
 
-# 设置服务器地址（默认 127.0.0.1:9880）
-tts-config --server 127.0.0.1:9880
+# 6. 启动服务并合成
+tts-server
+tts-speak "こんにちは。" ja
 ```
 
-### 4. 准备模型
+### 场景 B：已有 GPT-SoVITS 安装（客户端模式）
 
-将训练好的模型权重放入 `models/` 目录，然后复制并编辑 `tts_infer.yaml`：
+如果你已经有运行中的 GPT-SoVITS 服务，只需要客户端工具：
 
 ```bash
-cp tts_infer.yaml.example tts_infer.yaml
-# 编辑 tts_infer.yaml，设置正确的模型路径
+# 不需要 submodule
+git clone https://github.com/<your-username>/voice-pipeline.git
+cd voice-pipeline && bash install.sh
+
+# 指向你的服务器
+tts-config --server 192.168.1.100:9880
+
+# 直接使用
+tts-speak "こんにちは。" ja
 ```
 
-### 5. 启动服务并合成
+### 场景 C：已有 GPT-SoVITS 安装（需要服务管理）
+
+用环境变量指向你已有的 GPT-SoVITS 目录：
 
 ```bash
-tts-server              # 启动 API 服务
-tts-speak "こんにちは。" ja   # 合成并播放
-```
+git clone https://github.com/<your-username>/voice-pipeline.git
+cd voice-pipeline && bash install.sh
+
+# 通过环境变量指定 GPT-SoVITS 路径
+export VOICE_PIPELINE_PROJECT_DIR=/path/to/your/GPT-SoVITS
+export VOICE_PIPELINE_CONFIG=/path/to/your/tts_infer.yaml
+
+tts-server  # 使用你已有的安装启动服务
 
 ## 依赖
 
@@ -79,11 +96,17 @@ tts-speak "こんにちは。" ja   # 合成并播放
 
 ## 环境变量
 
+`tts-server` 支持以下环境变量，用于适配不同部署环境：
+
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
+| `VOICE_PIPELINE_PROJECT_DIR` | `./GPT-SoVITS` | GPT-SoVITS 项目根目录 |
 | `VOICE_PIPELINE_PORT` | 9880 | 服务端口 |
 | `VOICE_PIPELINE_CONDA` | GPTSoVits | conda 环境名 |
-| `VOICE_PIPELINE_CONFIG` | ./tts_infer.yaml | 推理配置文件路径 |
+| `VOICE_PIPELINE_CONFIG` | `./tts_infer.yaml` | 推理配置文件路径 |
+
+`tts-speak` 和 `tts-config` 不依赖本地 GPT-SoVITS，只通过 HTTP API 交互。
+服务器地址通过 `~/.voice_pipeline/config.json` 配置。
 
 ## 许可证
 
