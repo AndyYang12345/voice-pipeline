@@ -24,7 +24,7 @@ import requests
 
 # ── 路径常量 ──────────────────────────────────────────
 
-PIPELINE_DIR = os.path.dirname(os.path.abspath(__file__))
+PIPELINE_DIR = os.path.dirname(os.path.realpath(__file__))
 CONFIG_DIR = os.path.expanduser("~/.voice_pipeline")
 CONFIG_FILE = os.path.join(CONFIG_DIR, "config.json")
 TOGGLE_FILE = os.path.expanduser("~/.tts_speak_enabled")

@@ -13,7 +13,7 @@
 | 工具 | 用途 |
 |------|------|
 | `tts-speak` | 合成文本为语音并自动播放（支持流式/非流式） |
-| `tts-config` | 交互式/命令行配置管理 |
+| `tts-config` | 交互式/命令行配置管理（客户端 + 推理） |
 | `tts-server` | API 服务生命周期管理（启动/停止/状态） |
 
 ## 快速开始
@@ -33,8 +33,8 @@ bash install.sh
 #   models/sovits_weights/xxx.pth
 #   ref_audio/reference.wav
 
-# 4. 编辑 tts_infer.yaml 指向你的模型
-cp tts_infer.yaml.example tts_infer.yaml
+# 4. 自动配置推理参数（一键检测模型、设备、路径）
+tts-config --infer-auto
 
 # 5. 配置参考音频
 tts-config --ref-dir ./ref_audio
@@ -75,17 +75,18 @@ export VOICE_PIPELINE_PROJECT_DIR=/path/to/your/GPT-SoVITS
 export VOICE_PIPELINE_CONFIG=/path/to/your/tts_infer.yaml
 
 tts-server  # 使用你已有的安装启动服务
+```
 
 ## 依赖
 
-- Python 3.8+
+- Python 3.8+ / PyYAML
 - conda 环境（GPT-SoVITS 推理环境）
 - ffmpeg（音频播放）
 - GPT-SoVITS（作为 git submodule 包含）
 
 ## 配置
 
-配置文件位于 `~/.voice_pipeline/config.json`：
+### 客户端配置 (`~/.voice_pipeline/config.json`)
 
 ```json
 {
@@ -99,6 +100,43 @@ tts-server  # 使用你已有的安装启动服务
   }
 }
 ```
+
+可通过 `tts-config` 交互式菜单或命令行参数管理：
+
+```bash
+tts-config                  # 交互式菜单
+tts-config --show           # 查看当前配置
+tts-config --server 192.168.1.100:9880
+tts-config --mode 2
+tts-config --ref-audio reference.wav
+tts-config --ref-dir /path/to/ref_audio
+tts-config --prompt "参考テキスト" ja
+tts-config --toggle on|off  # 语音播报开关
+```
+
+### 推理配置 (`tts_infer.yaml`)
+
+GPT-SoVITS 服务端的模型配置文件。**无需手动编辑**，通过 `tts-config` 管理：
+
+```bash
+tts-config --infer-auto              # 一键自动检测模型并配置（推荐）
+tts-config --infer-show              # 查看当前推理配置
+tts-config --infer-device cuda       # 设置推理设备 (cuda/cpu)
+tts-config --infer-half on           # 切换半精度 (on/off)
+tts-config --infer-version v2ProPlus # 设置模型版本
+tts-config --infer-gpt-weights PATH  # 设置 GPT 权重路径
+tts-config --infer-sovits-weights PATH # 设置 SoVITS 权重路径
+tts-config --infer-init              # 从模板初始化配置文件
+```
+
+也可以在 `tts-config` 交互式菜单中选择 `[7] 配置推理参数` 进入子菜单逐项设置。
+
+`--infer-auto` 的自动检测逻辑：
+1. 扫描 `models/gpt_weights/` 下的 `.ckpt` 文件
+2. 扫描 `models/sovits_weights/` 下的 `.pth` 文件
+3. 通过 `nvidia-smi` / `torch.cuda` 检测最佳设备
+4. 从目录名/文件名推断模型版本
+5. 自动生成相对于 GPT-SoVITS 的正确路径
 
 ## 环境变量
 
