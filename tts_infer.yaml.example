@@ -1,0 +1,22 @@
+# voice-pipeline — GPT-SoVITS 推理配置模板
+# 复制为 tts_infer.yaml 并根据你的模型进行修改
+#
+# 路径解析规则:
+#   - 相对路径: 相对于 voice-pipeline 根目录
+#   - 绝对路径: 直接使用
+#   - ~/ 路径: 展开为 $HOME
+
+custom:
+  # BERT 基础模型路径（相对于 GPT-SoVITS submodule）
+  bert_base_path: GPT_SoVITS/pretrained_models/chinese-roberta-wwm-ext-large
+  cnhubert_base_path: GPT_SoVITS/pretrained_models/chinese-hubert-large
+
+  # 设备: cuda / cpu
+  device: cuda
+  is_half: true
+
+  # 模型权重路径
+  # 将你的 .ckpt 和 .pth 文件放入 models/gpt_weights/ 和 models/sovits_weights/
+  t2s_weights_path: models/gpt_weights/model.ckpt
+  version: v2ProPlus
+  vits_weights_path: models/sovits_weights/model.pth

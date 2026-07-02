@@ -1,0 +1,27 @@
+# 模型权重（用户自行提供）
+models/
+
+# 参考音频（用户自行提供）
+ref_audio/
+
+# 运行时生成
+*.pyc
+__pycache__/
+/tmp/
+
+# 用户配置文件（含本地路径，不提交）
+tts_infer.yaml
+
+# 临时日志
+/tmp/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
