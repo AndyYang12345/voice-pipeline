@@ -18,40 +18,42 @@
 
 ## 快速开始
 
-### 场景 A：新用户（使用 submodule）
+> 💡 以下是最简上手流程，一条命令完成推理配置。如需微调各项参数，参见下方 [配置](#配置) 章节。
+
+### 场景 A：完整安装（submodule，新手推荐）
 
 ```bash
-# 1. 克隆（含 GPT-SoVITS submodule）
+# 1. 克隆并安装
 git clone --recurse-submodules https://github.com/<your-username>/voice-pipeline.git
 cd voice-pipeline
-
-# 2. 安装
 bash install.sh
 
-# 3. 放置模型权重和参考音频
-#   models/gpt_weights/xxx.ckpt
-#   models/sovits_weights/xxx.pth
-#   ref_audio/reference.wav
+# 2. 放入你的模型文件和参考音频
+mkdir -p models/gpt_weights models/sovits_weights ref_audio
+#   → 将 .ckpt 放入 models/gpt_weights/
+#   → 将 .pth  放入 models/sovits_weights/
+#   → 将参考音频放入 ref_audio/
 
-# 4. 自动配置推理参数（一键检测模型、设备、路径）
+# 3. 一键配置（自动检测模型、设备、版本）
 tts-config --infer-auto
 
-# 5. 配置参考音频
+# 4. 配置参考音频
 tts-config --ref-dir ./ref_audio
 tts-config --ref-audio reference.wav
 tts-config --prompt "参考音频对应的文本" ja
 
-# 6. 启动服务并合成
+# 5. 启动服务，测试合成
 tts-server
 tts-speak "こんにちは。" ja
 ```
 
-### 场景 B：已有 GPT-SoVITS 安装（客户端模式）
+> 📖 步骤 3 的 `--infer-auto` 会自动扫描 `models/` 目录、检测 GPU/CUDA、推断版本并生成 `tts_infer.yaml`。如需手动调整设备、半精度、路径等参数，使用 `tts-config --infer-show` 查看，或参见 [推理配置](#推理配置-tts_inferyaml) 章节逐项修改。
 
-如果你已经有运行中的 GPT-SoVITS 服务，只需要客户端工具：
+### 场景 B：已有 GPT-SoVITS 服务（纯客户端）
+
+如果你已经有运行中的 GPT-SoVITS API 服务，只需客户端工具：
 
 ```bash
-# 不需要 submodule
 git clone https://github.com/<your-username>/voice-pipeline.git
 cd voice-pipeline && bash install.sh
 
@@ -62,7 +64,7 @@ tts-config --server 192.168.1.100:9880
 tts-speak "こんにちは。" ja
 ```
 
-### 场景 C：已有 GPT-SoVITS 安装（需要服务管理）
+### 场景 C：已有 GPT-SoVITS 安装（自管服务）
 
 用环境变量指向你已有的 GPT-SoVITS 目录：
 
@@ -70,11 +72,15 @@ tts-speak "こんにちは。" ja
 git clone https://github.com/<your-username>/voice-pipeline.git
 cd voice-pipeline && bash install.sh
 
-# 通过环境变量指定 GPT-SoVITS 路径
+# 指定 GPT-SoVITS 路径和推理配置
 export VOICE_PIPELINE_PROJECT_DIR=/path/to/your/GPT-SoVITS
 export VOICE_PIPELINE_CONFIG=/path/to/your/tts_infer.yaml
 
-tts-server  # 使用你已有的安装启动服务
+# 仍可使用一键配置（会写入 $VOICE_PIPELINE_CONFIG 指向的文件）
+tts-config --infer-auto
+
+tts-server
+tts-speak "こんにちは。" ja
 ```
 
 ## 依赖
