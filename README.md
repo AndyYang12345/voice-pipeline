@@ -4,7 +4,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.8+-3776AB?logo=python&logoColor=white)](https://www.python.org)
 [![Shell](https://img.shields.io/badge/Shell-bash-4EAA25?logo=gnu-bash&logoColor=white)](https://www.gnu.org/software/bash/)
-[![Platform](https://img.shields.io/badge/platform-Linux%20|%20macOS-lightgrey)](https://github.com/AndyYang12345/voice-pipeline)
+[![Platform](https://img.shields.io/badge/platform-Linux%20|%20macOS%20|%20Windows-lightgrey)](https://github.com/AndyYang12345/voice-pipeline)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![GPT-SoVITS](https://img.shields.io/badge/GPT--SoVITS-submodule-8A2BE2)](https://github.com/RVC-Boss/GPT-SoVITS)
 
@@ -101,6 +101,54 @@ tts-config --infer-auto
 tts-server
 tts-speak "こんにちは。" ja
 ```
+
+## Windows 安装
+
+> 需要 PowerShell 5.1+ 和 Python 3.8+。以下命令在 PowerShell 中运行。
+
+### 完整安装
+
+```powershell
+# 1. 克隆并安装
+git clone --recurse-submodules https://github.com/AndyYang12345/voice-pipeline.git
+cd voice-pipeline
+.\install.ps1
+
+# 2. 配置 GPT-SoVITS 环境
+#    → 按照 GPT-SoVITS 官方文档创建 conda 环境（默认名 GPTSoVits）
+#    → 或使用 GPT-SoVITS 自带的 install.ps1
+
+# 3. 放入模型文件（同 Linux 场景 A 步骤 3-6）
+tts-config --infer-auto
+tts-config --ref-dir .\ref_audio
+tts-config --ref-audio reference.wav
+tts-config --prompt "参考音频对应文本" ja
+
+# 4. 启动服务（使用 PowerShell 脚本）
+.\tts_server.ps1
+tts-speak "こんにちは。" ja
+```
+
+### 纯客户端模式
+
+```powershell
+git clone https://github.com/AndyYang12345/voice-pipeline.git
+cd voice-pipeline
+.\install.ps1
+tts-config --server 192.168.1.100:9880
+tts-speak "こんにちは。" ja
+```
+
+### 说明
+
+| 脚本 | Linux/macOS | Windows |
+|------|-------------|---------|
+| 安装 | `bash install.sh` | `.\install.ps1` |
+| 服务管理 | `tts-server` (bash) | `.\tts_server.ps1` |
+| 语音合成 | `tts-speak` (python) | `tts-speak` (python) |
+| 配置管理 | `tts-config` (python) | `tts-config` (python) |
+
+Python 脚本（`tts_speak.py`、`tts_config.py`）跨平台通用，无需区分。
 
 ## 依赖
 

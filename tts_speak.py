@@ -15,13 +15,18 @@ voice-pipeline — GPT-SoVITS 语音合成播放工具
 """
 
 import argparse
-import fcntl
 import json
 import subprocess
 import sys
 import os
 import struct
 import requests
+
+# ── 跨平台文件锁 ──────────────────────────────────────
+if sys.platform == "win32":
+    import msvcrt
+else:
+    import fcntl
 
 # ── 路径常量 ──────────────────────────────────────────
 
@@ -64,13 +69,19 @@ def acquire_lock() -> int:
     返回锁文件 fd，调用方负责在播放完成后关闭。"""
     ensure_config_dir()
     fd = os.open(LOCK_FILE, os.O_CREAT | os.O_RDWR, 0o644)
-    fcntl.flock(fd, fcntl.LOCK_EX)  # 阻塞等待
+    if sys.platform == "win32":
+        msvcrt.locking(fd, msvcrt.LK_LOCK, 1)
+    else:
+        fcntl.flock(fd, fcntl.LOCK_EX)  # 阻塞等待
     return fd
 
 
 def release_lock(fd: int):
     """释放锁并关闭 fd"""
-    fcntl.flock(fd, fcntl.LOCK_UN)
+    if sys.platform == "win32":
+        msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
+    else:
+        fcntl.flock(fd, fcntl.LOCK_UN)
     os.close(fd)
 
 

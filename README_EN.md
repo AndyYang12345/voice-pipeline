@@ -4,7 +4,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.8+-3776AB?logo=python&logoColor=white)](https://www.python.org)
 [![Shell](https://img.shields.io/badge/Shell-bash-4EAA25?logo=gnu-bash&logoColor=white)](https://www.gnu.org/software/bash/)
-[![Platform](https://img.shields.io/badge/platform-Linux%20|%20macOS-lightgrey)](https://github.com/AndyYang12345/voice-pipeline)
+[![Platform](https://img.shields.io/badge/platform-Linux%20|%20macOS%20|%20Windows-lightgrey)](https://github.com/AndyYang12345/voice-pipeline)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![GPT-SoVITS](https://img.shields.io/badge/GPT--SoVITS-submodule-8A2BE2)](https://github.com/RVC-Boss/GPT-SoVITS)
 
@@ -101,6 +101,54 @@ tts-config --infer-auto
 tts-server
 tts-speak "こんにちは。" ja
 ```
+
+## Windows Installation
+
+> Requires PowerShell 5.1+ and Python 3.8+. Run the following commands in PowerShell.
+
+### Full Installation
+
+```powershell
+# 1. Clone and install
+git clone --recurse-submodules https://github.com/AndyYang12345/voice-pipeline.git
+cd voice-pipeline
+.\install.ps1
+
+# 2. Set up GPT-SoVITS environment
+#    → Follow the GPT-SoVITS official guide to create a conda environment (default: GPTSoVits)
+#    → Or use GPT-SoVITS's own install.ps1
+
+# 3. Place model files (same as Linux Scenario A steps 3-6)
+tts-config --infer-auto
+tts-config --ref-dir .\ref_audio
+tts-config --ref-audio reference.wav
+tts-config --prompt "reference audio transcript" ja
+
+# 4. Start server (use PowerShell script)
+.\tts_server.ps1
+tts-speak "こんにちは。" ja
+```
+
+### Client-Only Mode
+
+```powershell
+git clone https://github.com/AndyYang12345/voice-pipeline.git
+cd voice-pipeline
+.\install.ps1
+tts-config --server 192.168.1.100:9880
+tts-speak "こんにちは。" ja
+```
+
+### Platform Cheat Sheet
+
+| Script | Linux/macOS | Windows |
+|--------|-------------|---------|
+| Install | `bash install.sh` | `.\install.ps1` |
+| Server mgmt | `tts-server` (bash) | `.\tts_server.ps1` |
+| TTS speak | `tts-speak` (python) | `tts-speak` (python) |
+| Config | `tts-config` (python) | `tts-config` (python) |
+
+Python scripts (`tts_speak.py`, `tts_config.py`) are fully cross-platform.
 
 ## Dependencies
 
