@@ -9,7 +9,7 @@
 set -e
 
 PORT="${VOICE_PIPELINE_PORT:-9880}"
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
 PROJECT_DIR="${VOICE_PIPELINE_PROJECT_DIR:-${SCRIPT_DIR}/GPT-SoVITS}"
 CONDA_ENV="${VOICE_PIPELINE_CONDA:-GPTSoVits}"
 PID_FILE="/tmp/voice_pipeline_server.pid"
